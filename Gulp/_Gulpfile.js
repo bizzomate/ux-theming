@@ -22,7 +22,9 @@ var gulp = require('gulp'),
     sass = require('gulp-sass'),
     browserSync = require('browser-sync').create(),
     path = require('path'),
-    sourcemaps = require('gulp-sourcemaps');
+    sourcemaps = require('gulp-sourcemaps'),
+    autoprefixer = require("autoprefixer"),
+    postcss      = require('gulp-postcss');
 
 var sourceFolder = './' + sourceStyleFolder + '/',
     sourceSassFolder = sourceFolder + 'sass/',
@@ -36,6 +38,7 @@ gulp.task('build-sass', function () {
     .pipe(sass({
       outputStyle: 'expanded'
     }).on('error', sass.logError))
+    .pipe(postcss([ autoprefixer() ]))
     .pipe(gulp.dest(sourceCssFolder))
     .pipe(gulp.dest(deploymentCssFolder));
 });
@@ -45,12 +48,14 @@ gulp.task('build', function () {
     .pipe(sass({
       outputStyle: 'compressed'
     }).on('error', sass.logError))
+    .pipe(postcss([ autoprefixer() ]))
     .pipe(gulp.dest(sourceCssFolder))
     .pipe(gulp.dest(deploymentCssFolder));
 });
 
 gulp.task('copy-css', function () {
   return gulp.src(sourceCssFolder + '**/*.css')
+    .pipe(postcss([ autoprefixer() ]))
     .pipe(gulp.dest(deploymentCssFolder));
 });
 
@@ -73,6 +78,7 @@ gulp.task('browsersync-sass', function () {
       outputStyle: 'expanded'
     }).on('error', sass.logError))
     .pipe(sourcemaps.write())
+    .pipe(postcss([ autoprefixer() ]))
     .pipe(gulp.dest(sourceCssFolder))
     .pipe(gulp.dest(deploymentCssFolder))
     .pipe(browserSync.stream());
